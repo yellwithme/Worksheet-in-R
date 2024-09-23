@@ -1,12 +1,9 @@
 ---
-title: "R Worksheet 1"
+title: "Worksheet 1 in R"
 author: "Mariel M. Gerona"
 date: "2024-09-23"
 output: pdf_document
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
 
 # 1. Set up a vector named age
 age <- c(34, 28, 22, 36, 27, 18, 52, 39, 42, 29,
@@ -105,5 +102,3 @@ name <- readline(prompt="Input your name: ")
 age <- readline(prompt="Input your age: ")
 print(paste("My name is", name, "and I am", age, "years old."))
 print(R.version.string)  # Output: R version information
-
-```
