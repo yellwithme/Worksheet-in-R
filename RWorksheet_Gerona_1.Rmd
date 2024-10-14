@@ -1,7 +1,6 @@
 ---
 title: "RWorksheet_Gerona#2.Rmd"
 author: "Mariel M. Gerona"
-date: "2024-09-23"
 output: pdf_document
 ---
 
