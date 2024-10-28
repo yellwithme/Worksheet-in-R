@@ -1,0 +1,226 @@
+---
+title: "RWorksheet_Gerona#4b"
+author: "Mariel M. Gerona"
+output: pdf_document
+---
+
+#1. Create a 5x5 Matrix with for Loop
+```{r}
+vectorA <- c(1, 2, 3, 4, 5)
+
+matrixA <- matrix(0, nrow = 5, ncol = 5)
+
+for (i in 1:5) {
+  for (j in 1:5) {
+    matrixA[i, j] <- abs(vectorA[i] - vectorA[j])
+  }
+}
+print(matrixA)
+```
+
+#2. Print star pattern using for Loop
+```{r}
+# Prints a triangle with 5 rows of stars
+for(i in 1:5) {
+  for(j in 1:i) {
+    cat("*")
+  }
+  cat("\n")
+}
+
+```
+
+#3.  Fibonacci Sequence up to 500
+```{r}
+fibonacci <- function(n) {
+  a <- 0
+  b <- 1
+  repeat {
+    cat(a, " ")
+    temp <- a + b
+    a <- b
+    b <- temp
+    if (a > 500) break
+  }
+}
+fibonacci()
+
+```
+
+#4. Importing and Analyzing Dataset
+#a. Import CSV file and display the first 6 rows
+
+```{r}
+
+library(readr)
+
+shoe_sizes <- read_csv("shoe_sizes.csv")
+head(shoe_sizes)
+```
+
+#b. Create a subset for gender and count observations:
+```{r}
+male <- subset(shoe_sizes, Gender == "M")
+female <- subset(shoe_sizes, Gender == "F")
+num_males <- nrow(male)
+num_females <- nrow(female)
+
+cat("Number of Male observations:", num_males, "\n")
+cat("Number of Female observations:", num_females, "\n")
+
+```
+#c. Barplot for Male and Female Counts
+
+```{r}
+gender_counts <- c(Males = 30, Females = 25)
+
+barplot(gender_counts,
+        main = "Number of Males and Females in Households",
+        xlab = "Gender",
+        ylab = "Count",
+        col = c("blue", "pink"),
+        ylim = c(0, max(gender_counts) + 5),  
+        beside = TRUE)
+
+legend("topright", 
+       legend = names(gender_counts), 
+       fill = c("blue", "pink"))
+
+
+```
+
+#5. Dela Cruz Family Monthly Income Pie Chart
+```{r}
+# Data for Dela Cruz family spending
+categories <- c("Food", "Electricity", "Savings", "Miscellaneous")
+spending <- c(60, 10, 5, 25)
+
+# Create a pie chart
+pie(spending, 
+    labels = paste(categories, "(", spending, "%)", sep=""), 
+    col = c("pink", "blue", "green", "orange"),
+    main = "Dela Cruz Family Monthly Spending Distribution")
+
+```
+
+#6. Iris Dataset Analysis
+#a. Check structure of the iris dataset:
+```{r}
+
+data(iris)
+str(iris)
+```
+
+#b. Mean of Sepal and Petal dimensions:
+```{r}
+
+mean_values <- colMeans(iris[, 1:4])
+print(mean_values)
+
+```
+
+#c. Species Distribution Pie Chart
+
+```{r}
+pie(table(iris$Species), main = "Species Distribution in Iris Dataset", col = c("green", "orange", "purple"))
+```
+#d. Subset by Species and Display Last 6 Rows:
+# Subset by species
+```{r}
+setosa <- subset(iris, Species == "setosa")
+versicolor <- subset(iris, Species == "versicolor")
+virginica <- subset(iris, Species == "virginica")
+
+tail(setosa)
+tail(versicolor)
+tail(virginica)
+
+```
+
+#e. Scatter Plot for Sepal Dimensions by Species:
+# Scatter plot for Sepal.Length and Sepal.Width
+```{r}
+plot(iris$Sepal.Length, iris$Sepal.Width, col = iris$Species, pch = 19,
+     xlab = "Sepal Length", ylab = "Sepal Width", main = "Iris Dataset",
+     sub = "Sepal width and length comparison", col.main = "blue")
+legend("topright", legend = levels(iris$Species), col = c("green", "orange", "purple"), pch = 19)
+
+```
+
+#6f. Interpretation of the result.
+The scatterplot illustrates the relationship between Sepal.Length and Sepal.Width across three species of flowers. Setosa points, shown in orange, typically have shorter sepal lengths and widths, clearly distinguishing them from the other species. Versicolor points, depicted in pink, are more widely distributed and exhibit slight overlap with Virginica points in yellow, indicating some similarities between these two species. In contrast, Virginica points tend to have larger sepal lengths and widths, further distinguishing them from Setosa while overlapping with some Versicolor points. Overall, the scatterplot effectively highlights the distinct separation of Setosa from the other species, with Versicolor and Virginica demonstrating some degree of overlap.
+
+
+#7a. Import the alexa-file.xlsx, Clean Up Variants, and Rename
+```{r}
+library(readxl)
+data <- read_excel("/cloud/project/Worksheet#4/Worksheet#4b/alexa-file.xlsx")
+
+data$variation <- gsub("Black  Dot", "Black Dot", data$variation)
+data$variation <- gsub("White  Plus", "White Plus", data$variation)
+
+head(data$variation)
+```
+
+#b. Get the total number of each variations and save it into another object.
+```{r}
+library(dplyr)             
+
+RObject <- data.frame(columnName = c("A", "B", "A", "C", "B", "A", "D"))
+
+variations <- RObject %>%
+  count(columnName)
+
+save(variations, file = "variations.RData")
+
+print(variations)
+
+```
+#7c
+```{r}
+library(readxl)
+library(dplyr)
+
+alexa_file <- "/cloud/project/Worksheet#4/Worksheet#4b/alexa-file.xlsx"
+data <- read_excel(alexa_file)
+
+data$variation <- gsub("Black  Dot", "Black Dot", data$variation)
+data$variation <- gsub("Black  Plus", "Black Plus", data$variation)
+data$variation <- gsub("Black  Show", "Black Show", data$variation)
+data$variation <- gsub("Black  Spot", "Black Spot", data$variation)
+data$variation <- gsub("White  Dot", "White Dot", data$variation)
+data$variation <- gsub("White  Plus", "White Plus", data$variation)
+data$variation <- gsub("White  Show", "White Show", data$variation)
+data$variation <- gsub("White  Spot", "White Spot", data$variation)
+
+black_white_data <- data %>%
+  filter(grepl("Black|White", variation))
+
+variation_count <- black_white_data %>%
+  count(variation)
+
+black_variations <- variation_count %>% filter(grepl("Black", variation))
+white_variations <- variation_count %>% filter(grepl("White", variation))
+
+black_counts <- setNames(black_variations$n, gsub("Black ", "", black_variations$variation))
+white_counts <- setNames(white_variations$n, gsub("White ", "", white_variations$variation))
+
+common_variations <- c("Dot", "Plus", "Show", "Spot")
+
+black_counts <- black_counts[common_variations]
+black_counts[is.na(black_counts)] <- 0
+
+white_counts <- white_counts[common_variations]
+white_counts[is.na(white_counts)] <- 0
+
+barplot_matrix <- rbind(black_counts, white_counts)
+
+barplot(barplot_matrix, beside = TRUE, col = c("pink", "blue"),
+        main = "Count of Black and White Variations",
+        xlab = "Variation Type", ylab = "Count",
+        legend = rownames(barplot_matrix), args.legend = list(x = "topright"))
+
+```
+
+
+

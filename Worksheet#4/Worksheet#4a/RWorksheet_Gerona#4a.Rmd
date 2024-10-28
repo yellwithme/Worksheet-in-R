@@ -1,5 +1,5 @@
 ---
-title: "RWorksheet_Gerona#4"
+title: "RWorksheet_Gerona#4a"
 author: "Mariel M. Gerona"
 output: pdf_document
 ---
@@ -97,9 +97,25 @@ print(factor_data)
 
 # 5. Read CSV data
 ```{r}
-data <- read.table("/cloud/project/Worksheet 4/import_march (1).csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
-print("Imported Data:")
-print(head(data))
+# Set working directory (optional, adjust path as needed)
+setwd("/cloud/project/Worksheet#4/Worksheet#4aS")
+
+# Check if file exists
+file_path <- "import_march (1).csv"
+
+if (file.exists(file_path)) {
+  # Read the CSV file
+  data <- read.table(file_path, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+  print("Imported Data:")
+  print(head(data))
+} else {
+  # If file doesn't exist, prompt user to select file
+  print("File not found. Please select the file manually.")
+  data <- read.table(file.choose(), header = TRUE, sep = ",", stringsAsFactors = FALSE)
+  print("Imported Data:")
+  print(head(data))
+}
+
 ```
 
 
@@ -218,4 +234,3 @@ for (i in 1:nrow(students_scores)) {
 
 
 ```
-
