@@ -1,0 +1,150 @@
+---
+title: "RWorksheet_Gerona#3a"
+author: "Mariel M. Gerona"
+output: pdf_document
+---
+
+# 1. There is a built-in vector LETTERS contains the uppercase letters of the alphabet and letters which contains lowercase letters of the alphabet.
+
+# a. Produce a vector that contains the first 11 letters.
+```{r}
+first_11 <- LETTERS[1:11]
+print(first_11)
+```
+
+
+# b. Produce a vector that contains the odd numbered letters.
+```{r}
+odd_letters <- LETTERS[seq(1, 26, by=2)]
+print(odd_letters)
+
+```
+
+# c. Produce a vector that contains the vowel letters.
+```{r}
+vowel_letters <- LETTERS[c(1, 5, 9, 15, 21)]
+print(vowel_letters)
+```
+
+ 
+# d. Produce a vector that contains the last 5 lowercase letters.
+```{r}
+last_5 <- letters[22:26]
+print(last_5)
+```
+
+ 
+# e. Produce a vector that contains letters between 15 to 24 letters in lowercase.
+```{r}
+letters_between <- letters[seq(15, 24)]
+print(letters_between)
+```
+
+
+
+# 2. Create a vector(not a dataframe) with the average temperatures in April
+
+# a. Character name of cities/towns
+```{r}
+city <- c("Tuguegarao City", "Manila", "Iloilo City", "Tacloban", "Samal Island", "Davao City")
+print(city)
+```
+
+
+# b - Average temperatures in Celcius
+```{r}
+temp <- c(42, 39, 34, 34, 30, 27)
+print(temp)
+```
+
+
+# c - Create a data frame to combine the city and temp
+```{r}
+city_temp_df <- data.frame(City = city, Temperature = temp)
+print(city_temp_df)
+
+```
+
+# d - Rename the columns using names() function as City and Temperature 
+```{r}
+names(city_temp_df) <- c("City", "Temperature")
+print(city_temp_df)
+
+```
+
+# e - Print structure of dataframe by using str() function.
+```{r}
+str(city_temp_df)
+```
+
+
+# f - Display the content of row 3 and row 4
+```{r}
+print(city_temp_df[3:4,])
+```
+
+
+# g - Display city with highest and lowest temperature
+```{r}
+max_temp_city <- city_temp_df$City[which.max(city_temp_df$Temperature)]
+min_temp_city <- city_temp_df$City[which.min(city_temp_df$Temperature)]
+
+print(max_temp_city)
+
+print(min_temp_city)
+
+```
+
+
+# 2. Create a matrix of one to eight and eleven to fourteen with four columns and three rows. 
+
+# a. Create matrix
+```{r}
+matrix_data <- matrix(c(1:8, 11:14), nrow=3, ncol=4)
+print(matrix_data)
+```
+
+
+# b. Multiply the matrix by two.
+```{r}
+mult_matrix <- matrix_data * 2
+print(mult_matrix)
+```
+
+
+# c. Content of row 2
+```{r}
+row_2 <- matrix_data[2,]
+print(row_2)
+```
+
+
+# d. Display output of the columns in 2 and 3, row 3
+```{r}
+subset_matrix <- matrix_data[2:3, 3:3]
+print(subset_matrix)
+```
+
+
+# 3. An array contains 1, 2, 3, 6, 7, 8, 9, 0, 3, 4, 5, 1
+
+# 3a - Create an array for the numeric values
+```{r}
+array_data <- array(c(1, 2, 3, 6, 7, 8, 9, 0, 3, 4, 5, 1), dim = c(2, 4, 3))
+print(array_data)
+```
+
+
+# 3b - Display array dimensions
+```{r}
+dim(array_data)
+```
+
+
+# 3c - Name rows, columns, and dimensions
+```{r}
+dimnames(array_data) <- list(
+  letters[1:2], LETTERS[1:4], c("1st-Dimensional Array", "2nd-Dimensional Array", "3rd-Dimensional Array"))
+print(array_data)
+```
+
