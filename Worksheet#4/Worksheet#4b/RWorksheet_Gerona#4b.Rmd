@@ -54,7 +54,7 @@ fibonacci()
 
 library(readr)
 
-shoe_sizes <- read_csv("shoe_sizes.csv")
+shoe_sizes <- read_csv("Shoe Sizes.csv")
 head(shoe_sizes)
 ```
 
