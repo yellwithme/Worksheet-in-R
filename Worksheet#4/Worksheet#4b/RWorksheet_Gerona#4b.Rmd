@@ -151,74 +151,85 @@ legend("topright", legend = levels(iris$Species), col = c("green", "orange", "pu
 The scatterplot illustrates the relationship between Sepal.Length and Sepal.Width across three species of flowers. Setosa points, shown in orange, typically have shorter sepal lengths and widths, clearly distinguishing them from the other species. Versicolor points, depicted in pink, are more widely distributed and exhibit slight overlap with Virginica points in yellow, indicating some similarities between these two species. In contrast, Virginica points tend to have larger sepal lengths and widths, further distinguishing them from Setosa while overlapping with some Versicolor points. Overall, the scatterplot effectively highlights the distinct separation of Setosa from the other species, with Versicolor and Virginica demonstrating some degree of overlap.
 
 
-#7a. Import the alexa-file.xlsx, Clean Up Variants, and Rename
+#7.Import the alexa-file.xlsx
 ```{r}
 library(readxl)
 data <- read_excel("/cloud/project/Worksheet#4/Worksheet#4b/alexa-file.xlsx")
 
-data$variation <- gsub("Black  Dot", "Black Dot", data$variation)
-data$variation <- gsub("White  Plus", "White Plus", data$variation)
+data$variation <- gsub("Black Dot", "Black Dot", data$variation)
+data$variation <- gsub("White Plus", "White Plus", data$variation)
 
 head(data$variation)
-```
-
-#b. Get the total number of each variations and save it into another object.
-```{r}
-library(dplyr)             
-
-RObject <- data.frame(columnName = c("A", "B", "A", "C", "B", "A", "D"))
-
-variations <- RObject %>%
-  count(columnName)
-
-save(variations, file = "variations.RData")
-
-print(variations)
 
 ```
-#7c
+
+#7a.  Rename the white and black variants by using gsub() function.
 ```{r}
-library(readxl)
+library(readxl) # Load the readxl package
+
+# Import the data and assign it to the variable 'alexa_file'
+alexa_file <- read_excel("alexa-file.xlsx") 
+
+# Rename the variations using gsub()
+alexa_file$variation <- gsub(" Black Dot", "BlackDot", alexa_file$variation)
+alexa_file$variation <- gsub(" Black Plus", "BlackPlus", alexa_file$variation)
+alexa_file$variation <- gsub(" Black Show", "BlackShow", alexa_file$variation)
+alexa_file$variation <- gsub(" Black Spot", "BlackSpot", alexa_file$variation)
+alexa_file$variation <- gsub(" White Dot", "WhiteDot", alexa_file$variation)
+alexa_file$variation <- gsub(" White Plus", "WhitePlus", alexa_file$variation)
+alexa_file$variation <- gsub(" White Show", "WhiteShow", alexa_file$variation)
+alexa_file$variation <- gsub(" White Spot", "WhiteSpot", alexa_file$variation)
+
+print(head(alexa_file))
+
+```
+
+#7b. Get the total number of each variations and save it into another object. Save the object as variations.RData. Write the R scripts. What is its result?
+```{r}
 library(dplyr)
 
-alexa_file <- "/cloud/project/Worksheet#4/Worksheet#4b/alexa-file.xlsx"
-data <- read_excel(alexa_file)
-
-data$variation <- gsub("Black  Dot", "Black Dot", data$variation)
-data$variation <- gsub("Black  Plus", "Black Plus", data$variation)
-data$variation <- gsub("Black  Show", "Black Show", data$variation)
-data$variation <- gsub("Black  Spot", "Black Spot", data$variation)
-data$variation <- gsub("White  Dot", "White Dot", data$variation)
-data$variation <- gsub("White  Plus", "White Plus", data$variation)
-data$variation <- gsub("White  Show", "White Show", data$variation)
-data$variation <- gsub("White  Spot", "White Spot", data$variation)
-
-black_white_data <- data %>%
-  filter(grepl("Black|White", variation))
-
-variation_count <- black_white_data %>%
+variations_count <- alexa_file %>%
   count(variation)
 
-black_variations <- variation_count %>% filter(grepl("Black", variation))
-white_variations <- variation_count %>% filter(grepl("White", variation))
+save(variations_count, file = "variations.RData")
+print(variations_count)
+```
 
-black_counts <- setNames(black_variations$n, gsub("Black ", "", black_variations$variation))
-white_counts <- setNames(white_variations$n, gsub("White ", "", white_variations$variation))
+#7c. From the variations.RData, create a barplot(). Complete the details of the chart which include the title, color, labels of each bar.
+```{r}
+load("variations.RData")
 
-common_variations <- c("Dot", "Plus", "Show", "Spot")
+barplot(variations_count$n, names.arg = variations_count$variation,
+        col = rainbow(nrow(variations_count)),
+        main = "Total Number of Variations",
+        xlab = "Variation",
+        ylab = "Count")
 
-black_counts <- black_counts[common_variations]
-black_counts[is.na(black_counts)] <- 0
-
-white_counts <- white_counts[common_variations]
-white_counts[is.na(white_counts)] <- 0
-
-barplot_matrix <- rbind(black_counts, white_counts)
-
-barplot(barplot_matrix, beside = TRUE, col = c("pink", "blue"),
-        main = "Count of Black and White Variations",
-        xlab = "Variation Type", ylab = "Count",
-        legend = rownames(barplot_matrix), args.legend = list(x = "topright"))
 
 ```
+
+#7d. Create a barplot() for the black and white variations. Plot it in 1 frame, side by side. Complete the details of the chart.
+```{r}
+# 7d. Create a barplot() for the black and white variations. Plot it in 1 frame, side by side. Complete the details of the chart.
+load("variations.RData") # Load the variations_count object
+
+# Separate black and white variations
+black_variations <- variations_count[grep("Black", variations_count$variation), ]
+white_variations <- variations_count[grep("White", variations_count$variation), ]
+
+# Extract the variation names as character vectors
+black_names <- black_variations$variation
+white_names <- white_variations$variation
+
+# Plot side by side
+barplot(cbind(black_variations$n, white_variations$n), 
+        beside = TRUE,
+        names.arg = c(black_names, white_names), # Use the extracted names
+        main = "Black vs. White Alexa Variations",
+        ylab = "Number of Variations",
+        col = c("black", "white"),
+        legend.text = c("Black", "White"),
+        args.legend = list(x = "topright"))
+```
+
 
