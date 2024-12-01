@@ -1,0 +1,205 @@
+---
+title: "RWorksheet#5a_group(Espadon, Bernasol, Gerona)"
+author: (Espadon, Bernasol, Gerona)
+output: pdf_document
+date: "2024-11-11"
+---
+```{r}
+library(polite)
+library(httr)
+library(rvest)
+library(dplyr)
+url <- "https://www.imdb.com/chart/toptv/?sort=rank%2Casc"
+
+session <- bow(url, 
+               user_agent = "Educational")
+session
+```
+
+1. Extracting TV Shows
+```{r}
+#Extracting the ranks and titles
+title_list <- read_html(url) %>%
+html_nodes('.ipc-title__text') %>%
+html_text()
+title_list
+```
+
+```{r}
+#Cleaning extracted text
+title_list_sub <- as.data.frame(title_list[3:27], stringsAsFactors = FALSE)
+colnames(title_list_sub) <- "ranks"
+
+split_df <- strsplit(as.character(title_list_sub$ranks), "\\.", fixed = FALSE)
+split_df <- data.frame(do.call(rbind, split_df), stringsAsFactors = FALSE)
+
+colnames(split_df) <- c("rank", "title")
+split_df <- split_df %>% select(rank, title)
+
+split_df$title <- trimws(split_df$title)
+
+rank_title <- split_df
+rank_title
+```
+
+```{r}
+#Extracting tv rating, the number of people who voted, the number of episodes, and the year it was released.
+rating_ls <- read_html(url) %>%
+  html_nodes('.ipc-rating-star--rating') %>%
+  html_text()
+
+voter_ls <- read_html(url) %>%
+  html_nodes('.ipc-rating-star--voteCount') %>%
+  html_text()
+clean_votes <- gsub('[()]', '', voter_ls)
+
+#extracted the number of episodes
+eps_ls <- read_html(url) %>%
+  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(2)') %>%
+  html_text()
+clean_eps <- gsub('[eps]', '', eps_ls)  # You need to use clean_eps here, not clean
+num_eps <- as.numeric(clean_eps)  # Now you're using the correct variable
+
+#extracted the year released
+years <- read_html(url) %>%
+  html_nodes('span.sc-5bc66c50-6.OOdsw.cli-title-metadata-item:nth-of-type(1)') %>%
+  html_text()
+```
+
+```{r}
+# Create the data frame
+top_tv_shows <- data.frame(
+  Title = rank_title[, 2],  # Assuming rank_title is your data frame
+  Rating = rating_ls,
+  Voters = clean_votes,
+  Episodes = num_eps,
+  Year = years
+)
+
+# Print the data frame
+print(top_tv_shows)
+
+# Number of user reviews (You'll need to add the code to extract this)
+```
+
+```{r}
+home_link <- 'https://www.imdb.com/chart/toptv/'
+main_page <- read_html(home_link)
+
+links <- main_page %>%
+html_nodes("a.ipc-title-link-wrapper") %>%
+html_attr("href")
+
+# Loop to get link of each show's page
+show_data <- lapply(links, function(link) {
+complete_link <- paste0("https://imdb.com", link)
+
+#loop to get the link for user review page
+usrv_link <- read_html(complete_link)
+usrv_link_page <- usrv_link %>%
+html_nodes('a.isReview') %>%
+html_attr("href")
+
+#loop to extract critic reviews
+critic <- usrv_link %>%
+html_nodes("span.score") %>%
+html_text()
+critic_df <- data.frame(Critic_Reviews = critic[2], stringsAsFactors = FALSE)
+
+#loop to extract pop rating
+pop_rating <- usrv_link %>%
+html_nodes('[data-testid="hero-rating-bar__popularity__score"]') %>%
+html_text()
+
+#loop to get user reviews of each shows
+usrv <- read_html(paste0("https://imdb.com", usrv_link_page[1]))
+usrv_count <- usrv %>%
+html_nodes('[data-testid="tturv-total-reviews"]') %>%
+html_text()
+
+return(data.frame(Show_Link = complete_link, User_Reviews = usrv_count, Critic = critic_df, Popularity_Rating = pop_rating))
+})
+
+
+
+show_url_df <- do.call(rbind, show_data)
+print(show_url_df)
+
+shows <- cbind(top_tv_shows, show_url_df)
+shows
+```
+
+#Below is the Amazon Data authored by Camarista
+```{r}
+# Load necessary libraries
+library(rvest)
+library(httr)
+library(dplyr)
+library(polite)
+library(stringr)
+
+# Define URLs
+urls <- c('https://www.amazon.com/s?k=backpacks&crid=35ZQ1H72MC3G9&sprefix=backpacks%2Caps%2C590&ref=nb_sb_ss_ts-doa-p_3_9',
+'https://www.amazon.com/s?k=laptops&crid=L7MQBW7MD4SX&sprefix=laptopb%2Caps%2C1304&ref=nb_sb_noss_2',
+'https://www.amazon.com/s?k=phone+case&dc&crid=1VPDCJ87S93TL&sprefix=phone+cas%2Caps%2C451&ref=a9_asc_1',
+'https://www.amazon.com/s?k=mountain+bike&crid=1ZQR71S8XHZN6&sprefix=mountain+bik%2Caps%2C499&ref=nb_sb_noss_2',
+'https://www.amazon.com/s?k=tshirt&crid=2RQIP7MP6IYAW&sprefix=tshirt%2Caps%2C443&ref=nb_sb_noss_2')
+```
+
+
+```{r}
+df <- list()
+
+for (i in seq_along(urls)) {
+
+session <- bow(urls[i], user_agent = "Educational")
+
+product_name <- scrape(session) %>%
+html_nodes('h2.a-size-mini') %>%
+html_text() %>%
+head(30)
+
+
+product_description <- scrape(session) %>%
+html_nodes('div.productDescription') %>%
+html_text() %>%
+head(30)
+
+
+product_rating <- scrape(session) %>%
+html_nodes('span.a-icon-alt') %>%
+html_text() %>%
+head(30)
+ratings <- as.numeric(str_extract(product_rating, "\\d+\\.\\d"))
+
+
+product_price <- scrape(session) %>%
+html_nodes('span.a-price') %>%
+html_text() %>%
+head(30)
+price <- as.numeric(str_extract(product_price, "\\d+\\.\\d+"))
+
+
+product_review <- scrape(session) %>%
+html_nodes('div.review-text-content') %>%
+html_text() %>%
+head(30)
+
+
+dfTemp <- data.frame(Product_Name = product_name[1:30],
+Description = product_description[1:30],
+Rating = ratings[1:30],
+Price = price[1:30],
+stringsAsFactors = FALSE)
+
+df[[i]] <- dfTemp
+}
+```
+
+```{r}
+print(df[[1]])
+print(df[[2]])
+print(df[[3]])
+print(df[[4]])
+print(df[[5]])
+```
