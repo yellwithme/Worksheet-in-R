@@ -6,18 +6,19 @@ output: pdf_document
 ---
 
 ```{r}
-library(ggplot2)
-library(dplyr)
-
-# 1. Load the mpg dataset
-mpg <- ggplot2::mpg
+# Install necessary packages if you haven't already
+install.packages(c("ggplot2", "dplyr"))
 ```
 
-
-# a. Solution to import a CSV file into the environment (assuming 'mpg.csv' as file name)
-)
+# Load the required libraries
 ```{r}
-mpg <- read.csv("path/to/mpg.csv"
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+# 1. Import the mpg dataset
+mpg<- read.csv("/cloud/project/Worksheet 4/Worksheet#4c/mpg.csv") 
 ```
 
 # b. Identifying categorical variables in the mpg dataset
@@ -109,28 +110,28 @@ ggplot(mpg, aes(x=displ, y=hwy, color=cty)) +
   labs(title="Relationship between Engine Displacement and Highway MPG", x="Engine Displacement", y="Highway MPG")
 
 # 8. Importing traffic.csv
-# traffic <- read.csv("traffic.csv")
+  traffic <- read.csv("traffic.csv")
 
 # a. Number of observations and variables in traffic dataset
-# traffic_summary <- list(observations = nrow(traffic), variables = names(traffic))
+ traffic_summary <- list(observations = nrow(traffic), variables = names(traffic))
 
 # b. Subset traffic dataset into junctions
-# junctions <- traffic %>% group_by(junction) %>% summarize()
+ junctions <- traffic %>% group_by(junction) %>% summarize()
 
 # c. Plot each junction using geom_line()
-# ggplot(traffic, aes(x=timestamp, y=count, color=junction)) +
-#   geom_line() +
-#   labs(title="Traffic Counts by Junction", x="Timestamp", y="Count")
+ ggplot(traffic, aes(x=timestamp, y=count, color=junction)) +
+   geom_line() +
+   labs(title="Traffic Counts by Junction", x="Timestamp", y="Count")
 
 # 9. Importing alexa_file.xlsx
-# library(readxl)
-# alexa_file <- read_excel("alexa_file.xlsx")
+ library(readxl)
+ alexa_file <- read_excel("alexa_file.xlsx")
 
 # a. Summary of alexa_file
-# alexa_summary <- list(observations = nrow(alexa_file), columns = ncol(alexa_file))
+ alexa_summary <- list(observations = nrow(alexa_file), columns = ncol(alexa_file))
 
 # b. Group variations and count each using dplyr
-# variation_counts <- alexa_file %>% group_by(variation) %>% summarize(count = n())
+ variation_counts <- alexa_file %>% group_by(variation) %>% summarize(count = n())
 
 # c. Plot variations using ggplot
 # ggplot(variation_counts, aes(x=variation, y=count)) +
