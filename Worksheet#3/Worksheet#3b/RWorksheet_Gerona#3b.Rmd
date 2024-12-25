@@ -6,7 +6,7 @@ author: Mariel M. Gerona
 
 # 1. Create a data frame using the table below
 
-# a. Create a data frame
+#1a. Create a data frame
 ```{r}
 df <- data.frame(
   Name = c("John", "Alice", "Peter", "Emma", "Mark"),
@@ -17,48 +17,48 @@ df <- data.frame(
 ```
 
 
-# b. Get structure and summary of the data
+#1b. Get structure and summary of the data
 ```{r}
 str(df)
 summary(df)
 ```
 
 
-# c. Check if the mean number of siblings is 5
+#1c. Check if the mean number of siblings is 5
 ```{r}
 mean_siblings <- mean(df$Siblings)
 mean_siblings == 5
 ```
 
 
-# d. Extract the first two rows and all columns using the subsetting functions
+#1d. Extract the first two rows and all columns using the subsetting functions
 ```{r}
 first_two_rows <- df[1:2, ]
 print(first_two_rows)
 ```
 
 
-# e. Extract 3rd and 5th rows with 2nd and 4th columns
+#1e. Extract 3rd and 5th rows with 2nd and 4th columns
 ```{r}
 selected_rows_cols <- df[c(3, 5), c(2, 4)]
 print(selected_rows_cols)
 ```
 
 
-# f. Select the variable "Type of Houses" then store the vector that results as types_houses
+#1f. Select the variable "Type of Houses" then store the vector that results as types_houses
 ```{r}
 types_houses <- df$Type_of_House
 
 ```
 
-# g. Select only all male respondents whose father's occupation was farmer
+#1g. Select only all male respondents whose father's occupation was farmer
 ```{r}
 males_farmers <- df[df$Sex == "Male" & df$Father_Occupation == "Farmer", ]
 print(males_farmers)
 ```
 
 
-# h. Select only all female respondents that have greater than or equal to 5 number of siblings attending schools
+#1h. Select only all female respondents that have greater than or equal to 5 number of siblings attending schools
 ```{r}
 females_siblings <- df[df$Sex == "Female" & df$Siblings >= 5, ]
 print(females_siblings)
