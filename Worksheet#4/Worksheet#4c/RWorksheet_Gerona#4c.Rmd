@@ -3,3 +3,287 @@ title: "RWorksheet_Gerona#4c"
 author: "Mariel M. Gerona"
 output: pdf_document
 ---
+
+#1a: Importing and Exploring the mpg Dataset
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Load the mpg dataset
+data("mpg")
+
+# Display first few rows
+head(mpg)
+```
+
+#1b. Which variables are categorical?
+```{r}
+categorical_vars <- mpg %>% select(where(is.character))
+categorical_vars
+
+```
+#1c. Which variables are continuous?
+```{r}
+continuous_vars <- mpg %>% select(where(is.numeric))
+continuous_vars
+
+```
+
+
+#2a. Group Manufacturers and Unique Models
+```{r}
+manufacturer_models <- mpg %>% 
+  group_by(manufacturer) %>% 
+  summarise(unique_models = list(unique(model)))
+
+manufacturer_models
+
+```
+#2. Plot Manufacturer Model Counts
+```{r}
+# Count the models per manufacturer
+manufacturer_counts <- mpg %>%
+  group_by(manufacturer) %>%
+  summarise(models = n_distinct(model))
+
+# Plot the counts of models per manufacturer
+ggplot(manufacturer_counts, aes(x = reorder(manufacturer, -models), y = models)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  theme_minimal() +
+  labs(title = "Number of Models per Manufacturer", x = "Manufacturer", y = "Model Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+##2b. Graph Unique Models Using plot() and ggplot()
+```{r}
+sorted_data <- manufacturer_counts[order(manufacturer_counts$models, decreasing = TRUE),]
+barplot(sorted_data$models, names.arg = sorted_data$manufacturer, las = 2, col = "Pink",
+main = "Number of Unique Models by Manufacturer",
+xlab = "Manufacturer", ylab = "Number of Unique Models")
+
+```
+
+```{r}
+# Using ggplot2
+ggplot(manufacturer_counts, aes(x = reorder(manufacturer, -models), y = models)) +
+  geom_bar(stat = "identity", fill = "coral") +
+  labs(title = "Unique Models per Manufacturer (ggplot2)",
+       x = "Manufacturer",
+       y = "Number of Unique Models") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+#2. What does ggplot(mpg, aes(model, manufacturer)) + geom_point() show?
+```{r}
+ggplot(mpg, aes(x = model, y = manufacturer)) + geom_point()
+
+```
+
+
+#2a. This plot shows the relationship between model and manufacturer. However, it may not be very informative due to the large number of model names, which can overlap and create a cluttered appearance, making the plot difficult to interpret.
+
+#3. Plot the model and the year using ggplot(). Use only the top 20 observations.
+```{r}
+# Get the top 20 observations based on year
+top_20_mpg <- mpg %>% 
+  arrange(desc(year)) %>% 
+  head(20)
+
+# Create the plot
+ggplot(top_20_mpg, aes(x = model, y = year)) +
+  geom_point(color = "blue") +
+  labs(title = "Top 20 Models by Year",
+       x = "Model",
+       y = "Year") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+#4a. Plot using geom_bar() using the top 20 observations only. The graphs should have a title, labels, and colors.
+```{r}
+# Group the data by model and count the number of cars per model
+model_counts <- mpg %>%
+  group_by(model) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count)) %>%
+  head(20)
+
+# Plot the top 20 models with geom_bar()
+ggplot(model_counts, aes(x = reorder(model, -count), y = count, fill = count)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Top 20 Car Models by Count",
+       x = "Car Model",
+       y = "Number of Cars",
+       fill = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_gradient(low = "lightblue", high = "blue")
+
+```
+#4b. Plot using the geom_bar() + coord_flip().
+```{r}
+# Plot the top 20 models with geom_bar() and coord_flip()
+ggplot(model_counts, aes(x = reorder(model, -count), y = count, fill = count)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(title = "Top 20 Car Models by Count",
+       x = "Car Model",
+       y = "Number of Cars",
+       fill = "Count") +
+  theme_minimal() +
+  scale_fill_gradient(low = "lightblue", high = "blue")
+
+```
+#5. Plot the relationship between cyl - number of cylinders and displ - engine displacement using geom_point with aesthetic color = engine displacement. Title should be “Relationship between No. of Cylinders and Engine Displacement”.
+```{r}
+# Create the plot
+ggplot(mpg, aes(x = cyl, y = displ, color = displ)) +
+  geom_point() +
+  labs(title = "Relationship between No. of Cylinders and Engine Displacement",
+       x = "Number of Cylinders",
+       y = "Engine Displacement (L)") +
+  theme_minimal() +
+  scale_color_gradient(low = "lightblue", high = "blue")
+
+```
+
+#6. Plot the relationship between displ (engine displacement) and hwy (highway miles per gallon). Mapped it with a continuous variable you have identified in #1-c.
+```{r}
+# Create the plot
+ggplot(mpg, aes(x = displ, y = hwy, color = cyl)) +
+  geom_point() +
+  labs(title = "Relationship between Engine Displacement and Highway MPG",
+       x = "Engine Displacement (L)",
+       y = "Highway Miles per Gallon",
+       color = "Number of Cylinders") +
+  theme_minimal()
+
+```
+
+#6a. How many numbers of observation does it have? What are the variables of the traffic dataset?
+```{r}
+# Load necessary library for reading Excel files
+library(readxl)
+
+# Import the traffic.xlsx file
+traffic_data <- read_excel("/cloud/project/Worksheet#4/Worksheet#4c/traffic.xlsx")
+
+# Check the number of observations and variables
+n_obs <- nrow(traffic_data)  # Number of observations
+variables <- colnames(traffic_data)  # Variables in the dataset
+
+# Show results
+n_obs
+variables
+
+```
+
+#6b. Subset the traffic dataset into junctions.
+```{r}
+# Subset the dataset based on the identified column (e.g., location)
+junctions_data <- traffic_data %>% 
+  filter(!is.na(location))  # Replace 'location' with the actual column name
+
+# View the first few rows of the junctions dataset
+head(junctions_data)
+
+```
+
+
+#6c. Plot each junction using geom_line.
+```{r}
+# Reshape data to long format using pivot_longer
+traffic_data_long <- traffic_data %>%
+  pivot_longer(cols = starts_with("Junction"),  # Select columns starting with "Junction"
+               names_to = "Junction",            # New column to hold the junction names
+               values_to = "Traffic")           # New column to hold the traffic data
+
+# Plotting the traffic data using geom_line
+ggplot(traffic_data_long, aes(x = Date, y = Traffic, color = Junction, group = Junction)) +
+  geom_line() +
+  labs(title = "Traffic Trends by Junction",
+       x = "Date",
+       y = "Traffic Volume") +
+  theme_minimal()
+
+```
+
+#7. From alexa_file.xlsx, import it to your environment.
+```{r}
+# Load necessary libraries
+library(readxl)
+
+# Set the correct file path
+file_path <- "/cloud/project/Worksheet#4/Worksheet#4c/alexa_file.xlsx"
+
+# Import the alexa_file.xlsx
+alexa_file <- read_excel(file_path)
+
+```
+
+#7a. How many observations does alexa_file has? What about the number of columns?
+```{r}
+# Check the number of observations and columns
+num_observations <- nrow(alexa_file)
+num_columns <- ncol(alexa_file)
+
+# Show results
+num_observations
+num_columns
+
+```
+
+#7b. Group the variations and get the total of each variation using dplyr.
+```{r}
+# Group by variations and get the total of each variation
+variation_totals <- alexa_file %>%
+  group_by(variation) %>%
+  summarise(total = sum(value, na.rm = TRUE))
+
+# Show the results
+variation_totals
+
+```
+
+#7c. Plot the variations using ggplot2.
+```{r}
+ggplot(variation_totals, aes(x = variation, y = total, fill = variation)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total by Variation", 
+       x = "Variation", 
+       y = "Total") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+#7d. Plot a geom_line() with the date and the number of verified reviews.
+```{r}
+ggplot(alexa_file, aes(x = date, y = verified_reviews)) +
+  geom_line(color = "blue") +
+  labs(title = "Verified Reviews Over Time", 
+       x = "Date", 
+       y = "Number of Verified Reviews") +
+  theme_minimal()
+
+```
+
+#7e. Get the relationship of variations and ratings.
+```{r}
+ggplot(alexa_file, aes(x = variation, y = rating, color = variation)) +
+  geom_boxplot() +
+  labs(title = "Variation vs. Rating", 
+       x = "Variation", 
+       y = "Rating") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
+
+
+
+
